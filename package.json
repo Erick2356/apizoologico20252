@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/Erick2356/apizoologico20252/issues"
   },
-  "homepage": "https://github.com/Erick2356/apizoologico20252#readme"
+  "homepage": "https://github.com/Erick2356/apizoologico20252#readme",
+  "dependencies": {
+    "express": "^5.1.0"
+  }
 }

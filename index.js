@@ -1,15 +1,15 @@
-// 1. Carga el módulo HTTP
-var http = require("http");
+const express = require('express')
+const app = express()
+const port = 3000
 
-// 2. Crea el servidor HTTP
-var server = http.createServer(function(request, response) {
-  // 3. Define la cabecera de la respuesta (estado 200 OK y tipo de contenido)
-  response.writeHead(200, { "Content-Type": "text/plain" });
-  // 4. Envía el mensaje de respuesta
-  response.end("¡Hola Mundo!\n");
-});
+app.get(
+  '/', (req,res)=> {
+    res.send('¡Hola Mundo!')
+  }
+)
 
-// 5. Inicia el servidor para que escuche en el puerto 8000
-server.listen(8000, function() {
-  console.log("Servidor escuchando en http://127.0.0.1:8000/");
-});
+app.listen(
+  port,() => {
+    console.log('La aplicación se ejecuta en el puerto' + port)
+  }
+)

@@ -21,8 +21,14 @@ router.get("/animals/:id", (req, res) => {
 
 
 //Consultar todos los animales
-router.get("/animals", (req, res) => {
+router.get("/animalsall", (req, res) => {
     animalSchema.find()
+        .then((data) => res.json(data))
+        .catch((error) => res.json({ message: error }));
+});
+
+router.get("/animals", (req, res) => {
+    animalSchema.find({ edad: {$gte :4}})
         .then((data) => res.json(data))
         .catch((error) => res.json({ message: error }));
 });

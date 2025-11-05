@@ -1,4 +1,4 @@
-const mongoose = require("mongoose"); // importando el componente mogoose
+const mongoose = require("mongoose");
 const animalSchema = mongoose.Schema({
     nombre: {
         type: String,
@@ -14,7 +14,8 @@ const animalSchema = mongoose.Schema({
     },
     fecha: {
         type: Date,
-        required: false,
+        required: false, // ← CAMBIAR a false
+        default: Date.now // ← AGREGAR valor por defecto
     }
 });
 module.exports = mongoose.model("Animal", animalSchema);

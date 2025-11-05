@@ -1,23 +1,31 @@
 const parser = require("body-parser");
 const express = require('express');
+const cors = require('cors'); // ← AGREGAR ESTO
 const app = express();
 const port = 3000;
 const animalRoutes = require("./routes/animal");
 const authRoutes = require("./routes/authentication")
 const mongoose = require("mongoose");
 require('dotenv').config();
-app.use(parser.urlencoded({ extended: false })); //permite leer los datos que vienen en la petición
-app.use(parser.json()); // transforma los datos a formato JSON
-//Gestión de las rutas usando el middleware
-app.use("/api", animalRoutes);
+
+// AGREGAR CORS (esto va PRIMERO)
+app.use(cors());
+
+// Luego los parsers
+app.use(parser.urlencoded({ extended: false }));
+app.use(parser.json());
 app.use(express.json());
+
+// Rutas
+app.use("/api", animalRoutes);
 app.use("/api", authRoutes);
-//Conexión a la base de datos
+
+// Conexión a la base de datos
 mongoose
     .connect(process.env.MONGODB_URI)
     .then(() => console.log("Conexión exitosa"))
     .catch((error) => console.log(error));
-//Conexión al puerto
+
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
+    console.log(`Servidor corriendo en puerto ${port}`)
 });

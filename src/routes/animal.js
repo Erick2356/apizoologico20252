@@ -1,64 +1,88 @@
 const express = require("express");
-const router = express.Router(); //manejador de rutas de express
+const router = express.Router();
 const animalSchema = require("../models/animalModel");
-//Nuevo animal
-router.post("/animal", (req, res) => {
-    const animal = animalSchema(req.body);
-    animal
-        .save()
-        .then((data) => res.json(data))
-        .catch((error) => res.json({ message: error }));
+
+// -----------------------------
+// CONSULTAR UN ANIMAL POR ID
+// -----------------------------
+router.get("/animals/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const data = await animalSchema.findById(id);
+        if (!data) return res.status(404).json({ message: "Animal no encontrado" });
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
-//Consultar un animal por su id
-router.get("/animals/:id", (req, res) => {
-    const { id } = req.params;
-    animalSchema
-        .findById(id)
-        .then((data) => res.json(data))
-        .catch((error) => res.json({ message: error }));
+// -----------------------------
+// CONSULTAR TODOS LOS ANIMALES
+// -----------------------------
+router.get("/animals", async (req, res) => {
+    try {
+        const data = await animalSchema.find();
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
-
-//Consultar todos los animales
-router.get("/animalsall", (req, res) => {
-    animalSchema.find()
-        .then((data) => res.json(data))
-        .catch((error) => res.json({ message: error }));
+// -----------------------------
+// CONSULTAR ANIMALES MAYORES O IGUALES A 4 AÑOS
+// -----------------------------
+router.get("/animals/edad/mayores", async (req, res) => {
+    try {
+        const data = await animalSchema.find({ edad: { $gte: 4 } });
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
-router.get("/animals", (req, res) => {
-    animalSchema.find({ edad: {$gte :4}})
-        .then((data) => res.json(data))
-        .catch((error) => res.json({ message: error }));
+// -----------------------------
+// REGISTRAR NUEVO ANIMAL
+// -----------------------------
+router.post("/animals", async (req, res) => {
+    try {
+        const animal = new animalSchema(req.body);
+        const saved = await animal.save();
+        res.json({ message: "Animal agregado correctamente", data: saved });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
-//Modificar el nombre de un animal por su id
-router.put("/animals/:id", (req, res) => {
-    const { id } = req.params;
-    const { nombre, edad, tipo, fecha } = req.body;
-    animalSchema
-        .updateOne({ _id: id }, {
-            $set: { nombre, edad, tipo, fecha }
-        })
-        .then((data) => res.json(data))
-        .catch((error) => res.json({ message: error }));
+// -----------------------------
+// ACTUALIZAR UN ANIMAL EXISTENTE
+// -----------------------------
+router.put("/animals/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const updated = await animalSchema.updateOne({ _id: id }, { $set: req.body });
+        if (updated.matchedCount === 0) {
+            return res.status(404).json({ message: "Animal no encontrado" });
+        }
+        res.json({ message: "Animal actualizado correctamente" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
 
-//Eliminar un animal por su id
-
-router.delete("/animals/:id", (req, res) => {
-    const { id } = req.params;
-    animalSchema
-        .findByIdAndDelete(id)
-        .then((data) => {
-            res.json(data);
-        })
-        .catch((error) => {
-            res.json({ message: error });
-        });
+// -----------------------------
+// ELIMINAR UN ANIMAL
+// -----------------------------
+router.delete("/animals/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deleted = await animalSchema.deleteOne({ _id: id });
+        if (deleted.deletedCount === 0) {
+            return res.status(404).json({ message: "Animal no encontrado" });
+        }
+        res.json({ message: "Animal eliminado correctamente" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
 });
-
-
 
 module.exports = router;
